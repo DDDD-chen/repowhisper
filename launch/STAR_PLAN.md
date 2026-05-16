@@ -56,3 +56,10 @@ One-shot check:
 ```bash
 python3 scripts/star_watch.py DDDD-chen/repowhisper --once
 ```
+
+If unauthenticated GitHub API calls are rate-limited, export a token first:
+
+```bash
+export GH_TOKEN="$(gh auth token)"
+python3 scripts/star_watch.py DDDD-chen/repowhisper --once
+```

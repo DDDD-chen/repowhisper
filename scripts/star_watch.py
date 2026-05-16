@@ -3,6 +3,7 @@
 
 import argparse
 import json
+import os
 import sys
 import time
 import urllib.error
@@ -21,12 +22,16 @@ def parse_args() -> argparse.Namespace:
 
 
 def fetch_stars(repo: str) -> int:
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "User-Agent": "repowhisper-star-watch",
+    }
+    token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
     request = urllib.request.Request(
         f"https://api.github.com/repos/{repo}",
-        headers={
-            "Accept": "application/vnd.github+json",
-            "User-Agent": "repowhisper-star-watch",
-        },
+        headers=headers,
     )
     with urllib.request.urlopen(request, timeout=20) as response:
         payload = json.loads(response.read().decode("utf-8"))
