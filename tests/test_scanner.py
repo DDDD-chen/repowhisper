@@ -90,6 +90,29 @@ sample = "sample.cli:main"
             self.assertIn("app.py", paths)
             self.assertIn("tests/test_app.py", paths)
 
+    def test_focus_paths_keep_changed_files_and_core_context(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "AGENTS.md").write_text("# Rules\n", encoding="utf-8")
+            (root / "pyproject.toml").write_text('[project]\nname = "sample"\n', encoding="utf-8")
+            (root / "README.md").write_text("# Sample\n", encoding="utf-8")
+            (root / "src").mkdir()
+            (root / "src" / "feature.py").write_text("def feature():\n    return 1\n", encoding="utf-8")
+            for index in range(20):
+                (root / f"doc_{index:02d}.md").write_text("# doc\n", encoding="utf-8")
+
+            brief = scan_repository(root, max_files=5, focus_paths=["src/feature.py"])
+            markdown = render_markdown(brief)
+
+            paths = {item.path for item in brief.files}
+            self.assertEqual("diff", brief.mode)
+            self.assertEqual(["src/feature.py"], brief.focus_paths)
+            self.assertIn("src/feature.py", paths)
+            self.assertIn("AGENTS.md", paths)
+            self.assertIn("pyproject.toml", paths)
+            self.assertIn("## Changed Files", markdown)
+            self.assertIn("changed file", next(item.reason for item in brief.files if item.path == "src/feature.py"))
+
 
 if __name__ == "__main__":
     unittest.main()

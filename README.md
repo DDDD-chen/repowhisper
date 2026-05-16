@@ -2,18 +2,18 @@
 
 [![test](https://github.com/DDDD-chen/repowhisper/actions/workflows/test.yml/badge.svg)](https://github.com/DDDD-chen/repowhisper/actions/workflows/test.yml)
 
-RepoWhisper turns a code repository into a compact, AI-ready project brief.
+RepoWhisper turns a code repository into a compact, AI-ready project brief so
+Codex, Claude, Cursor, and other coding agents start with the right map.
 
-It is built for the moment before you ask Codex, Claude, Cursor, or another coding
-agent to work in a repo and you want to give it the right context without pasting
-the whole codebase.
+Use it before asking an agent to edit a repo, review a PR, or explain an
+unfamiliar codebase.
 
 ![RepoWhisper terminal preview](docs/preview.svg)
 
 ```bash
-python3 -m repowhisper .
-python3 -m repowhisper . --write repowhisper.md --agents
-python3 -m repowhisper . --format json
+repowhisper .                         # full repository brief
+repowhisper . --diff --copy           # copy a brief for current git changes
+repowhisper . --write repowhisper.md  # save a shareable Markdown brief
 ```
 
 ## Why it exists
@@ -40,6 +40,8 @@ No API key. No telemetry. No upload. Just local files in, Markdown or JSON out.
 - Test, docs, config, and CI surface
 - Compact snippets from the files an agent should inspect first
 - Optional `AGENTS.md` with repo-specific onboarding instructions
+- Diff mode for PR-specific prompt packs
+- Clipboard copy for fast handoff into a coding-agent chat
 - JSON output for automation and dashboards
 
 ## Quick Start
@@ -63,6 +65,13 @@ For a smaller brief:
 repowhisper . --max-files 120 --max-snippet-lines 16
 ```
 
+For current git changes:
+
+```bash
+repowhisper . --diff --copy
+repowhisper . --diff --base origin/main --write pr-brief.md
+```
+
 For automation:
 
 ```bash
@@ -75,12 +84,16 @@ repowhisper . --format json > repo-context.json
 usage: repowhisper [path] [--write FILE] [--agents] [--format markdown|json]
                    [--max-files N] [--max-depth N] [--max-snippet-lines N]
                    [--include GLOB] [--exclude GLOB] [--profile NAME]
+                   [--diff] [--base REF] [--copy]
 ```
 
 Options:
 
 - `path`: repository path to scan, default is current directory
 - `--write FILE`: write the brief to a file instead of stdout
+- `--copy`: copy the brief to the system clipboard
+- `--diff`: focus on changed git files while keeping core repo context
+- `--base REF`: compare against a base ref for `--diff`, such as `origin/main`
 - `--agents`: write or update `AGENTS.md` beside the brief
 - `--format`: choose `markdown` or `json`
 - `--profile`: tune wording for `codex`, `claude`, `cursor`, or `generic`
@@ -118,9 +131,7 @@ You can add project-specific filters with `--include` and `--exclude`.
 
 ## Roadmap
 
-- Git diff mode for PR-specific context packs
 - Secret and large-file redaction warnings
-- Built-in model-specific prompt profiles
 - `pre-commit` hook recipe
 - Mermaid architecture sketch from import graph hints
 - GitHub Action for keeping `repowhisper.md` current

@@ -178,6 +178,7 @@ def scan_repository(
     max_snippet_lines: int = 24,
     include: Optional[Sequence[str]] = None,
     exclude: Optional[Sequence[str]] = None,
+    focus_paths: Optional[Sequence[str]] = None,
 ) -> RepoBrief:
     root = root.expanduser().resolve()
     if not root.exists():
@@ -187,6 +188,7 @@ def scan_repository(
 
     include = tuple(include or ())
     exclude = tuple(exclude or ())
+    focus_set = {path.strip("/") for path in (focus_paths or ()) if path.strip("/")}
     candidates: List[Tuple[Path, str, int, str, int, str]] = []
     files: List[FileInfo] = []
     language_bytes: Dict[str, int] = defaultdict(int)
@@ -200,9 +202,6 @@ def scan_repository(
         if _should_skip_file(rel, path):
             skipped_count += 1
             continue
-        if len(files) >= max_files:
-            skipped_count += 1
-            continue
 
         size = _safe_size(path)
         if size > 1_000_000:
@@ -211,8 +210,7 @@ def scan_repository(
         kind, score, reason = _classify(rel, path)
         candidates.append((path, rel, size, kind, score, reason))
 
-    candidates.sort(key=lambda item: (-item[4], item[1]))
-    selected = candidates[:max_files]
+    selected = _select_candidates(candidates, focus_set, max_files)
     skipped_count += max(0, len(candidates) - len(selected))
 
     for path, rel, size, kind, score, reason in selected:
@@ -221,6 +219,8 @@ def scan_repository(
             skipped_count += 1
             continue
         lines = text.count("\n") + (1 if text and not text.endswith("\n") else 0)
+        if rel in focus_set:
+            reason = f"changed file; {reason}"
         info = FileInfo(
             path=rel,
             suffix=path.suffix.lower(),
@@ -241,6 +241,8 @@ def scan_repository(
         skipped_count=skipped_count,
         total_bytes=sum(item.size for item in files),
         language_bytes=dict(sorted(language_bytes.items(), key=lambda item: (-item[1], item[0]))),
+        mode="diff" if focus_set else "repository",
+        focus_paths=sorted(focus_set),
     )
     brief.manifests = [item for item in files if item.kind == "manifest"]
     brief.docs = [item for item in files if item.kind == "docs"]
@@ -251,9 +253,44 @@ def scan_repository(
     brief.commands = _detect_commands(root, brief.manifests)
     brief.stack = _detect_stack(brief)
     brief.warnings = _detect_warnings(brief)
+    missing_focus = sorted(focus_set - {item.path for item in files})
+    if missing_focus:
+        brief.warnings.append(f"{len(missing_focus)} changed paths were skipped by filters, limits, or file type checks.")
     brief.tree_lines = _render_tree(files, max_depth=max_depth)
     brief.snippets = _collect_snippets(root, brief.top_files, max_snippet_lines)
     return brief
+
+
+def _select_candidates(
+    candidates: Sequence[Tuple[Path, str, int, str, int, str]],
+    focus_set: Set[str],
+    max_files: int,
+) -> List[Tuple[Path, str, int, str, int, str]]:
+    if not focus_set:
+        return sorted(candidates, key=lambda item: (-item[4], item[1]))[:max_files]
+
+    def key(item: Tuple[Path, str, int, str, int, str]) -> Tuple[int, int, str]:
+        _, rel, _, kind, score, _ = item
+        if rel in focus_set:
+            tier = 0
+        elif kind in {"agent", "manifest", "ci", "config"} or rel in {"README.md", "CONTRIBUTING.md"}:
+            tier = 1
+        else:
+            tier = 2
+        return (tier, -score, rel)
+
+    focused = [item for item in candidates if item[1] in focus_set]
+    context = [
+        item
+        for item in candidates
+        if item[1] not in focus_set
+        and (item[3] in {"agent", "manifest", "ci", "config"} or item[1] in {"README.md", "CONTRIBUTING.md"})
+    ]
+    remaining = [item for item in candidates if item[1] not in focus_set and item not in context]
+    selected = sorted(focused + context, key=key)
+    if len(selected) < max_files:
+        selected.extend(sorted(remaining, key=key)[: max_files - len(selected)])
+    return selected[:max_files]
 
 
 def _walk_files(root: Path) -> Iterable[Path]:

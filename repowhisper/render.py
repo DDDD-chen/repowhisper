@@ -15,17 +15,22 @@ def render_markdown(brief: RepoBrief, *, profile: str = "generic") -> str:
     lines.extend(
         [
             f"- Root: `{brief.root}`",
+            f"- Mode: {_mode_label(brief.mode)}",
             f"- Files scanned: {brief.file_count}",
             f"- Lines scanned: {brief.line_count}",
             f"- Bytes scanned: {_format_bytes(brief.total_bytes)}",
             f"- Stack signals: {', '.join(brief.stack)}",
         ]
     )
+    if brief.focus_paths:
+        lines.append(f"- Changed paths: {len(brief.focus_paths)}")
     if brief.language_bytes:
         lines.append(f"- Languages: {_language_summary(brief.language_bytes)}")
     lines.append("")
 
     _append_section(lines, "Likely Commands", _command_lines(brief.commands))
+    if brief.focus_paths:
+        _append_section(lines, "Changed Files", [f"- `{path}`" for path in brief.focus_paths])
     _append_file_section(lines, "Entrypoints", brief.entrypoints)
     _append_file_section(lines, "Manifests", brief.manifests)
     _append_file_section(lines, "Tests", brief.tests)
@@ -67,7 +72,10 @@ def render_markdown(brief: RepoBrief, *, profile: str = "generic") -> str:
     lines.append("")
     lines.append("```text")
     lines.append(f"You are working in `{brief.name}`.")
-    lines.append("Use the repo brief above as the starting map.")
+    if brief.mode == "diff":
+        lines.append("Use the changed files above as the focus and the surrounding sections as repository context.")
+    else:
+        lines.append("Use the repo brief above as the starting map.")
     lines.append("Before editing, inspect the listed entrypoints, manifests, tests, and agent instructions.")
     lines.append("Keep changes scoped, follow existing project style, and run the likely commands when relevant.")
     lines.append("If a convention is unclear, infer it from nearby files before introducing a new pattern.")
@@ -119,6 +127,8 @@ def render_json(brief: RepoBrief) -> str:
         "line_count": brief.line_count,
         "total_bytes": brief.total_bytes,
         "skipped_count": brief.skipped_count,
+        "mode": brief.mode,
+        "focus_paths": brief.focus_paths,
         "language_bytes": brief.language_bytes,
         "stack": brief.stack,
         "commands": brief.commands,
@@ -158,6 +168,12 @@ def _profile_intro(profile: str) -> str:
     if profile == "cursor":
         return "A compact context pack for editor-native AI coding sessions."
     return "A compact context pack for AI-assisted code work."
+
+
+def _mode_label(mode: str) -> str:
+    if mode == "diff":
+        return "focused diff"
+    return "full repository"
 
 
 def _append_section(lines: List[str], title: str, items: Iterable[str]) -> None:

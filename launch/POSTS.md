@@ -27,17 +27,24 @@ repo for the first time.
 
 ## X / Twitter
 
-I made RepoWhisper: a zero-dependency CLI that turns any codebase into an
-AI-ready brief for Codex, Claude, Cursor, and other coding agents.
+I made RepoWhisper: a zero-dependency CLI that turns any codebase or current git
+diff into an AI-ready brief for Codex, Claude, Cursor, and other coding agents.
 
 It scans locally and outputs:
 - project map
 - manifests and entrypoints
 - tests and likely commands
 - compact snippets
+- diff-focused prompt packs
 - optional AGENTS.md
 
 No API key. No upload.
+
+Try:
+
+```bash
+repowhisper . --diff --copy
+```
 
 ## LinkedIn
 
@@ -49,7 +56,8 @@ brief with the files, commands, conventions, and risk signals an agent should se
 first.
 
 It is intentionally boring infrastructure: zero runtime dependencies, Markdown
-and JSON output, and an optional `AGENTS.md` generator.
+and JSON output, diff-focused briefs, clipboard handoff, and an optional
+`AGENTS.md` generator.
 
 I am looking for feedback from developers using Codex, Claude, Cursor, Copilot,
 or similar tools in real repositories.

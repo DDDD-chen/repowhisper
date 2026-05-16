@@ -7,18 +7,18 @@
   <circle cx="78" cy="71" r="7" fill="#e65f5c"/>
   <circle cx="102" cy="71" r="7" fill="#e5b34f"/>
   <circle cx="126" cy="71" r="7" fill="#54b575"/>
-  <text x="156" y="77" fill="#dbe7ee" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="15">repowhisper . --profile codex</text>
+  <text x="156" y="77" fill="#dbe7ee" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="15">repowhisper . --diff --copy</text>
   <text x="82" y="136" fill="#101418" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="24" font-weight="700"># Repo Brief: repowhisper</text>
   <text x="82" y="176" fill="#40515f" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16">A compact context pack for AI-assisted code work.</text>
   <text x="82" y="226" fill="#101418" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="19" font-weight="700">## Snapshot</text>
-  <text x="82" y="260" fill="#40515f" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16">- Stack signals: Python, GitHub Actions</text>
-  <text x="82" y="288" fill="#40515f" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16">- Languages: Python 72%, Markdown 23%, Other 5%</text>
-  <text x="82" y="338" fill="#101418" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="19" font-weight="700">## First Files To Read</text>
-  <text x="82" y="372" fill="#40515f" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16">- pyproject.toml - project manifest</text>
-  <text x="82" y="400" fill="#40515f" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16">- repowhisper/cli.py - likely entry point</text>
-  <text x="82" y="428" fill="#40515f" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16">- tests/test_scanner.py - test surface</text>
+  <text x="82" y="260" fill="#40515f" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16">- Mode: focused diff</text>
+  <text x="82" y="288" fill="#40515f" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16">- Stack signals: Python, GitHub Actions</text>
+  <text x="82" y="338" fill="#101418" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="19" font-weight="700">## Changed Files</text>
+  <text x="82" y="372" fill="#40515f" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16">- repowhisper/cli.py</text>
+  <text x="82" y="400" fill="#40515f" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16">- repowhisper/scanner.py</text>
+  <text x="82" y="428" fill="#40515f" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16">- tests/test_cli.py</text>
   <rect x="598" y="206" width="236" height="168" rx="8" fill="#dbe7ee"/>
   <text x="626" y="250" fill="#24313d" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="17" font-weight="700">Local only</text>
-  <text x="626" y="288" fill="#24313d" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="17" font-weight="700">Zero deps</text>
-  <text x="626" y="326" fill="#24313d" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="17" font-weight="700">Markdown + JSON</text>
+  <text x="626" y="288" fill="#24313d" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="17" font-weight="700">Diff mode</text>
+  <text x="626" y="326" fill="#24313d" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="17" font-weight="700">Clipboard ready</text>
 </svg>

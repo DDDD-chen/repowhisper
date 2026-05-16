@@ -41,6 +41,8 @@ class RepoBrief:
     stack: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
     tree_lines: List[str] = field(default_factory=list)
+    mode: str = "repository"
+    focus_paths: List[str] = field(default_factory=list)
 
     @property
     def file_count(self) -> int:
